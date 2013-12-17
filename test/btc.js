@@ -1,9 +1,11 @@
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+    btc = require('../lib/btc');
+
 
 describe('btc.js', function() {
     it('realtime', function(done) {
         this.timeout(10000);
-        var realtime = require('../lib/btc/realtime');
+        var realtime = btc.realtime;
         realtime.subscribe('row');
         realtime.once('currency', function(stat, cur) {
             assert(stat && cur);
@@ -11,12 +13,22 @@ describe('btc.js', function() {
         });
     });
 
-    it.only('market', function(done) {
+    it.only('btc', function(done) {
         this.timeout(10000);
-        var btc = require('../lib/btc');
-        setTimeout(function() {
-            assert(btc.market.market('USD'));
+        btc.init(function() {
+            var bitcoin = btc.money;
+            assert(bitcoin(1).to('USD'));
             done();
-        }, 5000);
+        });
+    });
+
+
+    it('market', function(done) {
+        this.timeout(10000);
+        var market = btc.market;
+        market.update(function() {
+            assert(market.market('USD'));
+            done();
+        });
     });
 });
